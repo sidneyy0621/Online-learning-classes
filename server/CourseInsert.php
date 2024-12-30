@@ -1,7 +1,7 @@
 <?php
 require_once './DB.php';
 
-function DoInsert(){
+function CourseInsert(){
     $response = DB();
 
     $course_id = $_POST['course_id'];      
