@@ -1,22 +1,22 @@
 <?php 
 require_once './DB.php';
 
-function DoUpdate(){
+function CourseUpdate(){
     $response = DB();
 
     $course_id = $_POST['course_id'];      
     $course_name = $_POST['course_name'];
     $description = $_POST['description'];    
-    $teacher_id = $_POST['teacher_id'];
+    $teacher_name = $_POST['teacher_name'];
 
 
     if($response['status']==200) {
         $conn = $response['result'];
 
-        $sql = "UPDATE `course` SET `course_name` = ?, `description` = ?, `teacher_id` = ? WHERE `course_id` = ?";  
+        $sql = "UPDATE `course` SET `course_name` = ?, `description` = ?, `teacher_name` = ? WHERE `course_id` = ?";  
 
         $stmt = $conn->prepare($sql);
-        $result = $stmt->execute([$course_name, $description, $teacher_id, $course_id]);
+        $result = $stmt->execute([$course_name, $description, $teacher_name, $course_id]);
 
         if($result) {
             $count = $stmt->rowCount();
