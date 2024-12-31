@@ -7,15 +7,15 @@ function CourseInsert(){
     $course_id = $_POST['course_id'];      
     $course_name = $_POST['course_name'];
     $description = $_POST['description'];    
-    $teacher_id = $_POST['teacher_id'];
+    $teacher_name = $_POST['teacher_name'];
 
     if($response['status']==200) {
         $conn = $response['result'];
 
-        $sql = "INSERT INTO `course` (`course_id`, `course_name`, `description`, `teacher_id`) VALUES (?,?,?,?)";
+        $sql = "INSERT INTO `course` (`course_id`, `course_name`, `description`, `teacher_name`) VALUES (?,?,?,?)";
         
         $stmt = $conn->prepare($sql);
-        $result = $stmt->execute([$course_id, $course_name, $description, $teacher_id]);  //可以用[]代替array()
+        $result = $stmt->execute([$course_id, $course_name, $description, $teacher_name]);  //可以用[]代替array()
 
         if($result) {
             $count=$stmt->rowCount();  //獲取受影響的行數
