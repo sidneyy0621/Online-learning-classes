@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>線上課程平台</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        nav {
+            background-color: #f8f8f8;
+            padding: 10px;
+        }
+        nav a {
+            margin: 0 15px;
+            text-decoration: none;
+            color: #333;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        .content {
+            display: none;
+        }
+        .content.active {
+            display: block;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+    <script>
+        function showContent(id) {
+            var contents = document.querySelectorAll('.content');
+            contents.forEach(function(content) {
+                content.classList.remove('active');
+            });
+            document.getElementById(id).classList.add('active');
+        }
+
+        function addCourse() {
+            document.getElementById('courseForm').style.display = 'block';
+        }
+
+        function submitCourse() {
+            let data = {
+                "course_id": document.getElementById("course_id").value,
+                "course_name": document.getElementById("course_name").value,
+                "description": document.getElementById("description").value,
+                "teacher_name": document.getElementById("teacher_name").value,
+            };
+
+            axios.post("../server/index.php?action=CourseInsert", Qs.stringify(data))
+                .then(res => {
+                    let response = res['data'];
+                    if (response['status'] === 200) {
+                        let courseTable = document.querySelector("#courseTable tbody");
+                        let newRow = `
+                            <tr>
+                                <td>${data.course_id}</td>
+                                <td>${data.course_name}</td>
+                                <td>${data.description}</td>
+                                <td>${data.teacher_name}</td>
+                            </tr>
+                        `;
+                        courseTable.innerHTML += newRow;
+
+                        // 清空表單
+                        document.getElementById("course_id").value = '';
+                        document.getElementById("course_name").value = '';
+                        document.getElementById("description").value = '';
+                        document.getElementById("teacher_name").value = '';
+
+                        // 隱藏表單
+                        document.getElementById('courseForm').style.display = 'none';
+                    } else {
+                        alert(response['message']);
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("新增課程失敗");
+                });
+        }
+    </script>
+</head>
+<body>
+    <nav>
+        <a href="#home" onclick="showContent('home')">首頁</a>
+        <a href="#courses" onclick="showContent('courses')">您的課程</a>
+    </nav>
+    <div id="home" class="content active">
+        <h1>歡迎來到首頁</h1>
+        <p>這是首頁的內容。</p>
+    </div>
+    <div id="courses" class="content">
+        <h1>您的課程</h1>
+        <p>這是老師目前所開設的所有課程畫面。</p>
+        <button onclick="addCourse()">新增課程</button>
+        <div id="courseForm" style="display:none;">
+            <h2>新增課程</h2>
+            <label for="course_id">課程編號：</label>
+            <input type="text" id="course_id"><br>
+            <label for="course_name">課程名稱：</label>
+            <input type="text" id="course_name"><br>
+            <label for="description">課程描述：</label>
+            <input type="text" id="description"><br>
+            <label for="teacher_name">教師姓名：</label>
+            <input type="text" id="teacher_name"><br>
+            <button onclick="submitCourse()">提交</button>
+        </div>
+        <table id="courseTable">
+            <thead>
+                <tr>
+                    <th>課程編號</th>
+                    <th>課程名稱</th>
+                    <th>課程描述</th>
+                    <th>教師姓名</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!--  -->
+            </tbody>
+        </table>
+        
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qs/dist/qs.js"></script>
+</body>
+</html>
