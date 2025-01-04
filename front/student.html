@@ -3,138 +3,264 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>線上課程平台</title>
+    <title>學生課程平台</title>
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 0;
         }
         nav {
-            background-color: #f8f8f8;
-            padding: 10px;
+            background-color: #926ed4;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         nav a {
-            margin: 0 15px;
+            color: white;
             text-decoration: none;
-            color: #333;
+            margin: 0 10px;
+            font-weight: bold;
         }
         nav a:hover {
             text-decoration: underline;
         }
         .content {
-            display: none;
-        }
-        .content.active {
-            display: block;
+            margin: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
-        table, th, td {
-            border: 1px solid black;
-        }
-        th, td {
-            padding: 8px;
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 12px;
             text-align: left;
         }
+        table th {
+            background-color: #926ed4;
+            color: white;
+        }
+        table tr:hover {
+            background-color: #f1f1f1;
+        }
+        button {
+            background-color: #926ed4;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #7a5bba;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            right: 0;
+            z-index: 1;
+            min-width: 200px;
+        }
+        .dropdown-content a {
+            color: black;
+            padding: 10px 15px;
+            display: block;
+            text-decoration: none;
+        }
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        .username {
+            font-weight: bold;
+        }
     </style>
-    <script>
-        function showContent(id) {
-            var contents = document.querySelectorAll('.content');
-            contents.forEach(function(content) {
-                content.classList.remove('active');
-            });
-            document.getElementById(id).classList.add('active');
-        }
-
-        function addCourse() {
-            document.getElementById('courseForm').style.display = 'block';
-        }
-
-        function submitCourse() {
-            let data = {
-                "course_id": document.getElementById("course_id").value,
-                "course_name": document.getElementById("course_name").value,
-                "description": document.getElementById("description").value,
-                "teacher_name": document.getElementById("teacher_name").value,
-            };
-
-            axios.post("../server/index.php?action=CourseInsert", Qs.stringify(data))
-                .then(res => {
-                    let response = res['data'];
-                    if (response['status'] === 200) {
-                        let courseTable = document.querySelector("#courseTable tbody");
-                        let newRow = `
-                            <tr>
-                                <td>${data.course_id}</td>
-                                <td>${data.course_name}</td>
-                                <td>${data.description}</td>
-                                <td>${data.teacher_name}</td>
-                            </tr>
-                        `;
-                        courseTable.innerHTML += newRow;
-
-                        // 清空表單
-                        document.getElementById("course_id").value = '';
-                        document.getElementById("course_name").value = '';
-                        document.getElementById("description").value = '';
-                        document.getElementById("teacher_name").value = '';
-
-                        // 隱藏表單
-                        document.getElementById('courseForm').style.display = 'none';
-                    } else {
-                        alert(response['message']);
-                    }
-                })
-                .catch(err => {
-                    console.error(err);
-                    alert("新增課程失敗");
-                });
-        }
-    </script>
 </head>
 <body>
     <nav>
-        <a href="#home" onclick="showContent('home')">首頁</a>
-        <a href="#courses" onclick="showContent('courses')">您的課程</a>
-    </nav>
-    <div id="home" class="content active">
-        <h1>歡迎來到首頁</h1>
-        <p>這是首頁的內容。</p>
-    </div>
-    <div id="courses" class="content">
-        <h1>您的課程</h1>
-        <p>這是老師目前所開設的所有課程畫面。</p>
-        <button onclick="addCourse()">新增課程</button>
-        <div id="courseForm" style="display:none;">
-            <h2>新增課程</h2>
-            <label for="course_id">課程編號：</label>
-            <input type="text" id="course_id"><br>
-            <label for="course_name">課程名稱：</label>
-            <input type="text" id="course_name"><br>
-            <label for="description">課程描述：</label>
-            <input type="text" id="description"><br>
-            <label for="teacher_name">教師姓名：</label>
-            <input type="text" id="teacher_name"><br>
-            <button onclick="submitCourse()">提交</button>
+        <div>
+            <a href="#home" onclick="showContent('home')">首頁</a>
+            <a href="#studentCourses" onclick="showContent('studentCourses')">您的課程</a>
         </div>
-        <table id="courseTable">
+        <div class="dropdown">
+            <span class="username" id="username"></span>
+            <div class="dropdown-content">
+                <a href="#profile" onclick="showContent('profile')">個人資料</a>
+                <a href="javascript:logout()">登出</a>
+            </div>
+        </div>
+    </nav>
+
+    <div id="home" class="content active">
+        <h1 id="welcomeMessage">歡迎，{student_name}</h1>
+        <h2>所有課程列表</h2>
+        <table id="allCoursesTable">
             <thead>
                 <tr>
                     <th>課程編號</th>
                     <th>課程名稱</th>
                     <th>課程描述</th>
                     <th>教師姓名</th>
+                    <th>操作</th>
                 </tr>
             </thead>
             <tbody>
-                <!--  -->
+                <!-- 動態載入 -->
             </tbody>
         </table>
-        
     </div>
+
+    <div id="studentCourses" class="content" style="display:none;">
+        <h1>您的課程</h1>
+        <p>這是學生已加入的所有課程列表。</p>
+        <table id="studentCoursesTable">
+            <thead>
+                <tr>
+                    <th>課程編號</th>
+                    <th>課程名稱</th>
+                    <th>課程描述</th>
+                    <th>教師姓名</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- 動態載入 -->
+            </tbody>
+        </table>
+    </div>
+
+    <div id="profile" class="content" style="display:none;">
+        <h1>個人資料</h1>
+        <label for="edit_student_name">姓名：</label>
+        <input type="text" id="edit_student_name"><br>
+        <button onclick="updateProfile()">更新資料</button>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qs/dist/qs.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 預設顯示首頁
+            showContent('home');
+            const studentName = localStorage.getItem('studentName');
+            if (studentName) {
+                document.getElementById('welcomeMessage').textContent = `歡迎，${studentName}`;
+                document.getElementById('username').textContent = studentName;
+                document.getElementById('edit_student_name').value = studentName;
+            }
+            loadAllCourses();
+            loadStudentCourses();
+        });
+
+        function showContent(id) {
+            const contents = document.querySelectorAll('.content');
+            contents.forEach(content => content.style.display = content.id === id ? 'block' : 'none');
+        }
+
+        function loadAllCourses() {
+            axios.post("../server/index.php?action=CourseSelect")
+                .then(res => {
+                    const courses = res.data.result || [];
+                    const tableBody = document.querySelector("#allCoursesTable tbody");
+                    tableBody.innerHTML = '';
+                    courses.forEach(course => {
+                        tableBody.innerHTML += `
+                            <tr>
+                                <td>${course.course_id}</td>
+                                <td>${course.course_name}</td>
+                                <td>${course.description}</td>
+                                <td>${course.teacher_name}</td>
+                                <td><button onclick="joinCourse('${course.course_id}')">加入</button></td>
+                            </tr>
+                        `;
+                    });
+                });
+        }
+
+        function joinCourse(courseId) {
+            const studentName = localStorage.getItem('studentName');
+            axios.post("../server/index.php?action=JoinCourse", Qs.stringify({ course_id: courseId, student_name: studentName }))
+                .then(res => {
+                    if (res.data.status === 200) {
+                        loadStudentCourses();
+                        alert("成功加入課程！");
+                    } else {
+                        alert(res.data.message);
+                    }
+                });
+        }
+
+        function loadStudentCourses() {
+            const studentName = localStorage.getItem('studentName');
+            axios.post("../server/index.php?action=StudentCourses", Qs.stringify({ student_name: studentName }))
+                .then(res => {
+                    const courses = res.data.result || [];
+                    const tableBody = document.querySelector("#studentCoursesTable tbody");
+                    tableBody.innerHTML = '';
+                    courses.forEach(course => {
+                        tableBody.innerHTML += `
+                            <tr>
+                                <td>${course.course_id}</td>
+                                <td>${course.course_name}</td>
+                                <td>${course.description}</td>
+                                <td>${course.teacher_name}</td>
+                                <td><button onclick="leaveCourse('${course.course_id}')">刪除</button></td>
+                            </tr>
+                        `;
+                    });
+                });
+        }
+
+        function leaveCourse(courseId) {
+            const studentName = localStorage.getItem('studentName');
+            axios.post("../server/index.php?action=LeaveCourse", Qs.stringify({ course_id: courseId, student_name: studentName }))
+                .then(res => {
+                    if (res.data.status === 200) {
+                        loadStudentCourses();
+                        alert("成功刪除課程！");
+                    } else {
+                        alert(res.data.message);
+                    }
+                });
+        }
+
+        function updateProfile() {
+            const studentName = document.getElementById('edit_student_name').value;
+            localStorage.setItem('studentName', studentName);
+            alert('個人資料更新成功');
+            location.reload();
+        }
+
+        function logout() {
+            localStorage.removeItem('studentName');
+            window.location.href = 'home.html';
+        }
+    </script>
 </body>
 </html>
