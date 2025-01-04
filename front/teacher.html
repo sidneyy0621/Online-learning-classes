@@ -40,6 +40,13 @@
         }
     </style>
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        const teacherName = localStorage.getItem('teacherName');
+        if (teacherName) {
+            document.getElementById('welcomeMessage').textContent = `歡迎${teacherName}老師登入系統`;
+        }
+        });
+
         function showContent(id) {
             var contents = document.querySelectorAll('.content');
             contents.forEach(function(content) {
@@ -50,6 +57,7 @@
 
         function addCourse() {
             document.getElementById('courseForm').style.display = 'block';
+            document.getElementById('editForm').style.display = 'none';
         }
 
         function submitCourse() {
@@ -71,6 +79,10 @@
                                 <td>${data.course_name}</td>
                                 <td>${data.description}</td>
                                 <td>${data.teacher_name}</td>
+                                <td>
+                                    <button onclick="editCourse('${data.course_id}')">修改</button>
+                                    <button onclick="deleteCourse('${data.course_id}')">刪除</button>
+                                </td>
                             </tr>
                         `;
                         courseTable.innerHTML += newRow;
@@ -92,6 +104,109 @@
                     alert("新增課程失敗");
                 });
         }
+
+        function loadCourses() {
+            axios.post("../server/index.php?action=CourseSelect")
+                .then(res => {
+                    let response = res['data'];
+                    if (response['status'] === 200) {
+                        let courses = response['result'];
+                        let courseTable = document.querySelector("#courseTable tbody");
+                        courseTable.innerHTML = ''; // 清空表格
+                        courses.forEach(course => {
+                            let newRow = `
+                                <tr>
+                                    <td>${course.course_id}</td>
+                                    <td>${course.course_name}</td>
+                                    <td>${course.description}</td>
+                                    <td>${course.teacher_name}</td>
+                                    <td>
+                                        <button onclick="editCourse('${course.course_id}')">修改</button>
+                                        <button onclick="deleteCourse('${course.course_id}')">刪除</button>
+                                    </td>
+                                </tr>
+                            `;
+                            courseTable.innerHTML += newRow;
+                        });
+                    } else {
+                        alert(response['message']);
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("載入課程失敗");
+                });
+        }
+
+        function deleteCourse(course_id) {
+            axios.post("../server/index.php?action=CourseDelete", Qs.stringify({ course_id }))
+                .then(res => {
+                    let response = res['data'];
+                    if (response['status'] === 200) {
+                        loadCourses();
+                    } else {
+                        alert(response['message']);
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("刪除課程失敗");
+                });
+        }
+
+        function editCourse(course_id) {
+            axios.post("../server/index.php?action=CourseSelect", Qs.stringify({ course_id }))
+                .then(res => {
+                    let response = res['data'];
+                    if (response['status'] === 200) {
+                        let course = response['result'][0];
+                        document.getElementById('edit_course_id').value = course.course_id;
+                        document.getElementById('edit_course_name').value = course.course_name;
+                        document.getElementById('edit_description').value = course.description;
+                        document.getElementById('edit_teacher_name').value = course.teacher_name;
+                        document.getElementById('editForm').style.display = 'block';
+                        document.getElementById('courseForm').style.display = 'none';
+                    } else {
+                        alert(response['message']);
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("載入課程失敗");
+                });
+        }
+
+        function updateCourse() {
+            let data = {
+                "course_id": document.getElementById("edit_course_id").value,
+                "course_name": document.getElementById("edit_course_name").value,
+                "description": document.getElementById("edit_description").value,
+                "teacher_name": document.getElementById("edit_teacher_name").value,
+            };
+
+            axios.post("../server/index.php?action=CourseUpdate", Qs.stringify(data))
+                .then(res => {
+                    let response = res['data'];
+                    if (response['status'] === 200) {
+                        loadCourses();
+                        document.getElementById('editForm').style.display = 'none';
+                    } else {
+                        alert(response['message']);
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("更新課程失敗");
+                });
+        }
+
+        window.onload = function() {
+            loadCourses();
+            let teacherName = localStorage.getItem('teacherName');
+            if (teacherName) {
+                document.getElementById('welcomeMessage').innerText = `歡迎 ${teacherName} 老師登入系統`;
+            }
+        }
     </script>
 </head>
 <body>
@@ -100,7 +215,7 @@
         <a href="#courses" onclick="showContent('courses')">您的課程</a>
     </nav>
     <div id="home" class="content active">
-        <h1>歡迎來到首頁</h1>
+        <h1 id="welcomeMessage">歡迎{teacher_name}登入</h1>
         <p>這是首頁的內容。</p>
     </div>
     <div id="courses" class="content">
@@ -110,14 +225,26 @@
         <div id="courseForm" style="display:none;">
             <h2>新增課程</h2>
             <label for="course_id">課程編號：</label>
-            <input type="text" id="course_id"><br>
+            <input type="text" id="course_id"><br><br>
             <label for="course_name">課程名稱：</label>
-            <input type="text" id="course_name"><br>
+            <input type="text" id="course_name"><br><br>
             <label for="description">課程描述：</label>
-            <input type="text" id="description"><br>
+            <textarea id="description" style="resize: both;"></textarea><br><br>
             <label for="teacher_name">教師姓名：</label>
             <input type="text" id="teacher_name"><br>
             <button onclick="submitCourse()">提交</button>
+        </div>
+        <div id="editForm" style="display:none;">
+            <h2>修改課程</h2>
+            <label for="edit_course_id">課程編號：</label>
+            <input type="text" id="edit_course_id" disabled><br><br>
+            <label for="edit_course_name">課程名稱：</label>
+            <input type="text" id="edit_course_name"><br><br>
+            <label for="edit_description">課程描述：</label>
+            <textarea id="edit_description" style="resize: both;"></textarea><br><br>
+            <label for="edit_teacher_name">教師姓名：</label>
+            <input type="text" id="edit_teacher_name"><br>
+            <button onclick="updateCourse()">提交</button>
         </div>
         <table id="courseTable">
             <thead>
@@ -126,6 +253,7 @@
                     <th>課程名稱</th>
                     <th>課程描述</th>
                     <th>教師姓名</th>
+                    <th>操作</th>
                 </tr>
             </thead>
             <tbody>
