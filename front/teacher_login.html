@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教師登入</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        .form-container {
+            display: inline-block;
+            text-align: left;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .form-container input {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+            width: 200px;
+        }
+        .btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>教師登入</h1>
+    <div class="form-container">
+        <form id="loginForm" method="post">
+            <label for="teacher-id">帳號：</label>
+            <input type="text" id="teacher-id" name="username" required>
+            <label for="password">密碼：</label>
+            <input type="password" id="password" name="password" required>
+            <button class="btn" type="button" onclick="submitLoginForm()">登入</button>
+        </form>
+        <p>你還沒註冊嗎？<a href="register.html">註冊</a></p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        function submitLoginForm() {
+            let formData = new FormData(document.getElementById('loginForm'));
+            axios.post('../server/longin.php', formData)
+                .then(response => {
+                    if (response.data.status === 200) {
+                        if (response.data.role === 'teacher') {
+                            window.location.href = 'teacher.html';
+                        // } else {
+                        //     window.location.href = 'student.html';
+                        }
+                    } else {
+                        alert(response.data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('登入失敗，請重試！');
+                });
+        }
+    </script>
+</body>
+</html>
