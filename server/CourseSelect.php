@@ -16,7 +16,14 @@ function CourseSelect(){
             
             $stmt = $conn->prepare($sql);
             $result = $stmt->execute([$course_id]);
-        } else {
+
+        } else if (isset($_POST['teacher_name'])) {
+            $teacher_name = $_POST['teacher_name'];
+            $sql = "SELECT * FROM `course` WHERE `teacher_name`=?";
+            $stmt = $conn->prepare($sql);
+            $result = $stmt->execute([$teacher_name]);
+            
+        }else {
             // 查詢所有使用者
             $sql = "SELECT  *  FROM  `course`";
             
@@ -40,4 +47,5 @@ function CourseSelect(){
     
     return($response); 
 }
+
 
