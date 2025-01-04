@@ -60,9 +60,8 @@
                 .then(response => {
                     if (response.data.status === 200) {
                         if (response.data.role === 'teacher') {
+                            localStorage.setItem('teacherName', response.data.name); // 假設後端返回教師名稱
                             window.location.href = 'teacher.html';
-                        // } else {
-                        //     window.location.href = 'student.html';
                         }
                     } else {
                         alert(response.data.message);
