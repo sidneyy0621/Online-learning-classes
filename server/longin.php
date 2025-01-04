@@ -20,6 +20,7 @@ function loginUser() {
             $response['status'] = 200;
             $response['message'] = "登入成功";
             $response['role'] = $result['role'];
+            $response['name'] = $result['name'];
         } else {
             $response['status'] = 401;  // Unauthorized
             $response['message'] = "帳號或密碼錯誤！請重試";
