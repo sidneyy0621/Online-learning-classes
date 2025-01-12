@@ -184,40 +184,58 @@
         function loadAllCourses() {
             axios.post("../server/index.php?action=CourseSelect")
                 .then(res => {
-                    const courses = res.data.result || [];
-                    const tableBody = document.querySelector("#allCoursesTable tbody");
-                    tableBody.innerHTML = '';
-                    courses.forEach(course => {
-                        tableBody.innerHTML += `
-                            <tr>
-                                <td>${course.course_id}</td>
-                                <td>${course.course_name}</td>
-                                <td>${course.description}</td>
-                                <td>${course.teacher_name}</td>
-                                <td><button onclick="joinCourse('${course.course_id}')">加入</button></td>
-                            </tr>
-                        `;
-                    });
+                    if (res.data.status === 200) {
+                        const courses = res.data.result || [];
+                        const allCoursesTable = document.querySelector("#allCoursesTable tbody");
+                        allCoursesTable.innerHTML = '';
+                        courses.forEach(course => {
+                            const newRow = `
+                                <tr>
+                                    <td>${course.course_id}</td>
+                                    <td>${course.course_name}</td>
+                                    <td>${course.description}</td>
+                                    <td>${course.teacher_name}</td>
+                                    <td><button onclick="joinCourse('${course.course_id}')">加入</button></td>
+                                </tr>
+                            `;
+                            allCoursesTable.innerHTML += newRow;
+                        });
+                    } else {
+                        alert(res.data.message);
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("載入課程失敗，請稍後再試。");
                 });
         }
 
         function loadStudentCourses() {
             axios.post("../server/index.php?action=StudentCourseSelect", new URLSearchParams({ student_name: localStorage.getItem('studentName') }))
                 .then(res => {
-                    const courses = res.data.result || [];
-                    const tableBody = document.querySelector("#studentCoursesTable tbody");
-                    tableBody.innerHTML = '';
-                    courses.forEach(course => {
-                        tableBody.innerHTML += `
-                            <tr>
-                                <td>${course.course_id}</td>
-                                <td>${course.course_name}</td>
-                                <td>${course.description}</td>
-                                <td>${course.teacher_name}</td>
-                                <td><button onclick="leaveCourse('${course.course_id}')">退出</button></td>
-                            </tr>
-                        `;
-                    });
+                    if (res.data.status === 200) {
+                        const courses = res.data.result || [];
+                        const studentCoursesTable = document.querySelector("#studentCoursesTable tbody");
+                        studentCoursesTable.innerHTML = '';
+                        courses.forEach(course => {
+                            const newRow = `
+                                <tr>
+                                    <td>${course.course_id}</td>
+                                    <td>${course.course_name}</td>
+                                    <td>${course.description}</td>
+                                    <td>${course.teacher_name}</td>
+                                    <td><button onclick="leaveCourse('${course.course_id}')">退出</button></td>
+                                </tr>
+                            `;
+                            studentCoursesTable.innerHTML += newRow;
+                        });
+                    } else {
+                        alert(res.data.message);
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("載入課程失敗，請稍後再試。");
                 });
         }
 
@@ -232,6 +250,20 @@
                         alert('加入失敗: ' + res.data.message);
                     }
                 });
+        }
+        
+        function leaveCourse(course_id) {
+            const studentName = localStorage.getItem('studentName');
+            axios.post("../server/index.php?action=StudentCourseDelete", new URLSearchParams({student_name: studentName,course_id: course_id}))
+            .then(res => {
+                // const message = res.data.message || "退出成功";
+                if (res.data.status === 200) {
+                    alert("退出成功");
+                    loadStudentCourses(); // 立即刪除該課程行
+                } else {
+                    alert("退出失敗");
+                }
+            });
         }
 
         function updateProfile() {
