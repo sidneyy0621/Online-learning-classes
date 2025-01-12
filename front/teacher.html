@@ -65,7 +65,7 @@
             cursor: pointer;
         }
         button:hover {
-            background-color: #4a90e2;
+            background-color: #818FB4;
         }
         input, textarea {
             width: 100%;
@@ -114,6 +114,13 @@
 
             loadCourses();
             loadHomeCourses();
+            // const teacherName = localStorage.getItem('teacherName') || '未知用戶'; // Use a default value
+            // document.getElementById('username').innerText = teacherName;
+            // document.getElementById('welcomeMessage').innerText = `歡迎 ${teacherName} 登入`;
+
+            // loadCourses();
+            // loadHomeCourses();
+            
 
             axios.post('../server/CourseSelect.php', { teacher_name: teacherName })
                 .then(response => {
@@ -312,12 +319,12 @@
 
         window.onload = function() {
             loadCourses();
-            let teacherName = localStorage.getItem('teacherName');
-            if (teacherName) {
-                document.getElementById('welcomeMessage').innerText = `歡迎 ${teacherName} 老師登入系統`;
-                document.getElementById('username').innerText = teacherName;
-            }
+            loadHomeCourses();
+            let teacherName = localStorage.getItem('teacherName') || '未知用戶';
+            document.getElementById('welcomeMessage').innerText = `歡迎 ${teacherName} 老師登入系統`;
+            document.getElementById('username').innerText = teacherName;
         }
+        
     </script>
 </head>
 <body>
@@ -396,8 +403,8 @@
         </table>
         <div id="profile" class="content" style="display:none;">
             <h1>個人資料</h1>
-            <label for="edit_teacher_name">姓名：</label>
-            <input type="text" id="edit_teacher_name"><br>
+            <label for="profile_teacher_name">姓名：</label>
+            <input type="text" id="profile_teacher_name"><br>
             <button onclick="updateProfile()">更新資料</button>
         </div>
     </div>
@@ -434,16 +441,15 @@
                     alert("載入課程失敗");
                 });
         }
-
-        window.onload = function() {
-            loadCourses();
-            loadHomeCourses();
-            let teacherName = localStorage.getItem('teacherName');
-            if (teacherName) {
-                document.getElementById('welcomeMessage').innerText = `歡迎 ${teacherName} 老師登入系統`;
-                document.getElementById('username').innerText = teacherName;
-            }
-        }
+        // window.onload = function() {
+        //     loadCourses();
+        //     loadHomeCourses();
+        //     let teacherName = localStorage.getItem('teacherName') || '未知用戶';
+        //     document.getElementById('welcomeMessage').innerText = `歡迎 ${teacherName} 老師登入系統`;
+        //     document.getElementById('username').innerText = teacherName;
+        // }
+      
+        
     </script>
 </body>
 </html>
