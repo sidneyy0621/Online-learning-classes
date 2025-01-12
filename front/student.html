@@ -12,7 +12,7 @@
             padding: 0;
         }
         nav {
-            background-color: #926ed4;
+            background-color: #435585;
             color: white;
             padding: 15px;
             display: flex;
@@ -46,15 +46,15 @@
             text-align: left;
         }
         table th {
-            background-color: #926ed4;
+            background-color: #818FB4;
             color: white;
         }
         table tr:hover {
             background-color: #f1f1f1;
         }
         button {
-            background-color: #926ed4;
-            color: white;
+            background-color: #F5E8C7;
+            color: rgb(0, 0, 0);
             border: none;
             padding: 10px 15px;
             margin: 5px;
@@ -118,7 +118,7 @@
     </nav>
 
     <div id="home" class="content active">
-        <h1 id="welcomeMessage">歡迎，{student_name}</h1>
+        <h1 id="welcomeMessage">歡迎 ${studentName} 學生</h1>
         <h2>所有課程列表</h2>
         <table id="allCoursesTable">
             <thead>
@@ -163,17 +163,15 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qs/dist/qs.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qs/dist/qs.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // 預設顯示首頁
             showContent('home');
-            const studentName = localStorage.getItem('studentName');
-            if (studentName) {
-                document.getElementById('welcomeMessage').textContent = `歡迎，${studentName}`;
-                document.getElementById('username').textContent = studentName;
-                document.getElementById('edit_student_name').value = studentName;
-            }
+            const studentName = localStorage.getItem('studentName') || '未知用戶';
+            document.getElementById('username').innerText = studentName;
+            document.getElementById('welcomeMessage').innerText = `歡迎 ${studentName} 學生`;
+            document.getElementById('edit_student_name').value = studentName;
+
             loadAllCourses();
             loadStudentCourses();
         });
@@ -203,22 +201,8 @@
                 });
         }
 
-        function joinCourse(courseId) {
-            const studentName = localStorage.getItem('studentName');
-            axios.post("../server/index.php?action=JoinCourse", Qs.stringify({ course_id: courseId, student_name: studentName }))
-                .then(res => {
-                    if (res.data.status === 200) {
-                        loadStudentCourses();
-                        alert("成功加入課程！");
-                    } else {
-                        alert(res.data.message);
-                    }
-                });
-        }
-
         function loadStudentCourses() {
-            const studentName = localStorage.getItem('studentName');
-            axios.post("../server/index.php?action=StudentCourses", Qs.stringify({ student_name: studentName }))
+            axios.post("../server/index.php?action=StudentCourseSelect", new URLSearchParams({ student_name: localStorage.getItem('studentName') }))
                 .then(res => {
                     const courses = res.data.result || [];
                     const tableBody = document.querySelector("#studentCoursesTable tbody");
@@ -230,22 +214,22 @@
                                 <td>${course.course_name}</td>
                                 <td>${course.description}</td>
                                 <td>${course.teacher_name}</td>
-                                <td><button onclick="leaveCourse('${course.course_id}')">刪除</button></td>
+                                <td><button onclick="leaveCourse('${course.course_id}')">退出</button></td>
                             </tr>
                         `;
                     });
                 });
         }
 
-        function leaveCourse(courseId) {
+        function joinCourse(course_id) {
             const studentName = localStorage.getItem('studentName');
-            axios.post("../server/index.php?action=LeaveCourse", Qs.stringify({ course_id: courseId, student_name: studentName }))
+            axios.post("../server/index.php?action=StudentCourseInsert", new URLSearchParams({ student_name: studentName, course_id: course_id }))
                 .then(res => {
                     if (res.data.status === 200) {
+                        alert('加入成功');
                         loadStudentCourses();
-                        alert("成功刪除課程！");
                     } else {
-                        alert(res.data.message);
+                        alert('加入失敗: ' + res.data.message);
                     }
                 });
         }
