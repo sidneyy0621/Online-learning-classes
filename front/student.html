@@ -224,7 +224,7 @@
                                     <td>${course.course_name}</td>
                                     <td>${course.description}</td>
                                     <td>${course.teacher_name}</td>
-                                    <td><button onclick="leaveCourse('${course.course_id}')">退出</button></td>
+                                    <td><button onclick="leaveCourse('${course.course_id}')">刪除</button></td>
                                 </tr>
                             `;
                             studentCoursesTable.innerHTML += newRow;
@@ -258,10 +258,10 @@
             .then(res => {
                 // const message = res.data.message || "退出成功";
                 if (res.data.status === 200) {
-                    alert("退出成功");
+                    alert("刪除成功");
                     loadStudentCourses(); // 立即刪除該課程行
                 } else {
-                    alert("退出失敗");
+                    alert("刪除失敗");
                 }
             });
         }
