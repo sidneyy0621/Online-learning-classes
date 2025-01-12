@@ -60,6 +60,7 @@
                 .then(response => {
                     if (response.data.status === 200) {
                         if (response.data.role === 'student') {
+                            localStorage.setItem('studentName', response.data.name); // 假設後端返回學生名稱
                             window.location.href = 'student.html';
                         // } else {
                         //     window.location.href = 'student.html';
