@@ -108,9 +108,23 @@
         document.addEventListener('DOMContentLoaded', function() {
             showContent('home');
             const teacherName = localStorage.getItem('teacherName');
-            document.getElementById('username').innerText = teacherName;
-            document.getElementById('welcomeMessage').innerText = `歡迎${teacherName}登入`;
-            document.getElementById('edit_teacher_name').value = teacherName;
+            // document.getElementById('username').innerText = teacherName;
+            // document.getElementById('welcomeMessage').innerText = `歡迎${teacherName}登入`;
+            // document.getElementById('edit_teacher_name').value = teacherName;
+
+            const usernameElement = document.getElementById('username');
+            const welcomeMessageElement = document.getElementById('welcomeMessage');
+            const editTeacherNameElement = document.getElementById('edit_teacher_name');
+
+            if (usernameElement) {
+                usernameElement.innerText = teacherName;
+            }
+            if (welcomeMessageElement) {
+                welcomeMessageElement.innerText = `歡迎${teacherName}登入`;
+            }
+            if (editTeacherNameElement) {
+                editTeacherNameElement.value = teacherName;
+            }
 
             loadCourses();
             loadHomeCourses();
@@ -132,30 +146,19 @@
                         courses.forEach(course => {
                             const row = tableBody.insertRow();
                             row.insertCell(0).innerText = course.course_id;
-                            row.insertCell(1).innerText = course.course_name;
-                            row.insertCell(2).innerText = course.course_description;
-                            row.insertCell(3).innerText = course.teacher_name;
+                //             row.insertCell(1).innerText = course.course_name;
+                //             row.insertCell(2).innerText = course.course_description;
+                //             row.insertCell(3).innerText = course.teacher_name;
                         });
-                    } else {
-                        alert(response.data.message);
+                //     } else {
+                //         alert(response.data.message);
+                //     }
                     }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('查詢課程失敗，請重試！');
+                // .catch(error => {
+                //     console.error('Error:', error);
+                //     alert('查詢課程失敗，請重試！');
                 });
         });
-        // document.addEventListener('DOMContentLoaded', function() {
-        //     showContent('home');
-        //     const teacherName = localStorage.getItem('teacherName');
-        //     if (teacherName) {
-        //         document.getElementById('welcomeMessage').textContent = `歡迎${teacherName}老師登入系統`;
-        //         document.getElementById('username').textContent = teacherName;
-        //         document.getElementById('edit_teacher_name').value = teacherName;
-        //     }
-        //     loadCourses();
-        //     loadHomeCourses();
-        // });
 
         function showContent(id) {
 
