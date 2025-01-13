@@ -351,7 +351,7 @@
                 "gender": document.getElementById("gender").value,
             };
 
-            axios.post("../server/index.php?action=UpdateProfile", Qs.stringify(data))
+            axios.post("../server/usersUpdate.php", Qs.stringify(data))
                 .then(res => {
                     let response = res['data'];
                     if (response['status'] === 200) {
@@ -384,7 +384,7 @@
             document.getElementById('welcomeMessage').innerText = `歡迎 ${teacherName} 老師登入系統`;
             document.getElementById('username').innerText = teacherName;
         }
-        
+
     </script>
 </head>
 <body>
