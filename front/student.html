@@ -155,30 +155,81 @@
         </table>
     </div>
 
-    <div id="profile" class="content" style="display:none;">
+    <div id="profile" class="content" style="display: none;">
         <h1>個人資料</h1>
-        <label for="edit_student_name">姓名：</label>
-        <input type="text" id="edit_student_name"><br>
+        <label for="name">姓名：</label>
+        <input type="text" id="name" name="name" required><br><br>
+        <label for="account">帳號：</label>
+        <input type="text" id="account" name="account" required><br><br>
+        <label for="password">密碼：</label>
+        <input type="password" id="password" name="password" required><br><br>
+        <label for="gender">性別：</label>
+        <select id="gender" name="gender" required>
+            <option value="male">男</option>
+            <option value="female">女</option>
+            <option value="other">其他</option>
+        </select><br><br>
         <button onclick="updateProfile()">更新資料</button>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qs/dist/qs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.11.0/qs.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            showContent('home');
-            const studentName = localStorage.getItem('studentName') || '未知用戶';
+            const currentHash = window.location.hash || '#home';
+            showContent(currentHash.substring(1)); // 移除 # 符號
+            const studentName = localStorage.getItem('studentName');
+            const studentGender = localStorage.getItem('studentGender');
             document.getElementById('username').innerText = studentName;
             document.getElementById('welcomeMessage').innerText = `歡迎 ${studentName} 學生`;
             document.getElementById('edit_student_name').value = studentName;
 
             loadAllCourses();
             loadStudentCourses();
+
+            const studentAccount = localStorage.getItem('studentAccount');
+            const studentPassword = localStorage.getItem('studentPassword');
+            const profilestudentAccountElement = document.getElementById('account');
+            const profilestudentPasswordElement = document.getElementById('password');
+            const profilestudentGenderElement = document.getElementById('gender');
+
+            if (profilestudentAccountElement) {
+                profilestudentAccountElement.value = studentAccount;
+            }
+            if (profilestudentPasswordElement) {
+                profilestudentPasswordElement.value = studentPassword;
+            }
+            if (profilestudentGenderElement) {
+                profilestudentGenderElement.value = studentGender;
+            }
+
+            if (window.location.hash === '#profile') {
+                showContent('profile');
+                showProfile();
+            }
+
         });
 
         function showContent(id) {
             const contents = document.querySelectorAll('.content');
             contents.forEach(content => content.style.display = content.id === id ? 'block' : 'none');
+            
+            if (id === 'profile') {
+                showProfile();
+            }
+        }
+
+        function showProfile() {
+            const studentAccount = localStorage.getItem('studentAccount') || '';
+            const studentPassword = localStorage.getItem('studentPassword') || '';
+            const studentName = localStorage.getItem('studentName') || '未命名';
+            const studentGender = localStorage.getItem('studentGender') || 'other';
+
+            document.getElementById('account').value = studentAccount;
+            document.getElementById('password').value = studentPassword;
+            document.getElementById('name').value = studentName;
+            document.getElementById('gender').value = studentGender;
+
         }
 
         function loadAllCourses() {
@@ -267,16 +318,39 @@
         }
 
         function updateProfile() {
-            const studentName = document.getElementById('edit_student_name').value;
-            localStorage.setItem('studentName', studentName);
-            alert('個人資料更新成功');
-            location.reload();
+            let data = {
+                "account": document.getElementById("account").value,
+                "password": document.getElementById("password").value,
+                "name": document.getElementById("name").value,
+                "gender": document.getElementById("gender").value,
+            };
+
+            axios.post("../server/index.php?action=UpdateProfile", Qs.stringify(data))
+                .then(res => {
+                    let response = res['data'];
+                    if (response['status'] === 200) {
+                        alert("資料更新成功");
+                        localStorage.setItem('teacherPassword', data.password);
+                        localStorage.setItem('teacherName', data.name);
+                        localStorage.setItem('teacherGender', data.gender);
+                    } else {
+                        alert(response['message']);
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("更新資料失敗");
+                });
         }
 
         function logout() {
-            localStorage.removeItem('studentName');
+            localStorage.removeItem('teacherAccount');
+            localStorage.removeItem('teacherPassword');
+            localStorage.removeItem('teacherName');
+            localStorage.removeItem('teacherGender');
             window.location.href = 'home.html';
         }
+
     </script>
 </body>
 </html>
