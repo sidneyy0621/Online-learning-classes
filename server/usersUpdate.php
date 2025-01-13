@@ -27,7 +27,7 @@ function updateUserProfile() {
 
                 if ($count < 1) { // 沒有 row 更新
                     $response['status'] = 204; // No content
-                    $response['message'] = "更新失敗，請檢查帳號是否正確！";
+                    $response['message'] = "更新失敗，無更改資料！";
                 } else {
                     $response['status'] = 200; 
                     $response['message'] = "更新成功！";
