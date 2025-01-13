@@ -330,9 +330,9 @@
                     let response = res['data'];
                     if (response['status'] === 200) {
                         alert("資料更新成功");
-                        localStorage.setItem('teacherPassword', data.password);
-                        localStorage.setItem('teacherName', data.name);
-                        localStorage.setItem('teacherGender', data.gender);
+                        localStorage.setItem('studentPassword', data.password);
+                        localStorage.setItem('studentName', data.name);
+                        localStorage.setItem('studentGender', data.gender);
                     } else {
                         alert(response['message']);
                     }
@@ -344,10 +344,10 @@
         }
 
         function logout() {
-            localStorage.removeItem('teacherAccount');
-            localStorage.removeItem('teacherPassword');
-            localStorage.removeItem('teacherName');
-            localStorage.removeItem('teacherGender');
+            localStorage.removeItem('studentAccount');
+            localStorage.removeItem('studentPassword');
+            localStorage.removeItem('studentName');
+            localStorage.removeItem('studentGender');
             window.location.href = 'home.html';
         }
 
