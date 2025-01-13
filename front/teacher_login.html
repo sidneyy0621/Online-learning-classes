@@ -56,11 +56,14 @@
     <script>
         function submitLoginForm() {
             let formData = new FormData(document.getElementById('loginForm'));
-            axios.post('../server/longin.php', formData)
+            axios.post('../server/login.php', formData)
                 .then(response => {
                     if (response.data.status === 200) {
                         if (response.data.role === 'teacher') {
-                            localStorage.setItem('teacherName', response.data.name); // 假設後端返回教師名稱
+                            localStorage.setItem('teacherAccount', response.data.account);
+                            localStorage.setItem('teacherPassword', response.data.password);
+                            localStorage.setItem('teacherName', response.data.name);
+                            localStorage.setItem('teacherGender', response.data.gender);
                             window.location.href = 'teacher.html';
                         }
                     } else {
