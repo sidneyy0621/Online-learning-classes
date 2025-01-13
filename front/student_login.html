@@ -56,7 +56,7 @@
     <script>
         function submitLoginForm() {
             let formData = new FormData(document.getElementById('loginForm'));
-            axios.post('../server/login.php', formData)
+            axios.post('../server/longin.php', formData)
                 .then(response => {
                     if (response.data.status === 200) {
                         if (response.data.role === 'student') {

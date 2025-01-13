@@ -21,6 +21,9 @@ function loginUser() {
             $response['message'] = "登入成功";
             $response['role'] = $result['role'];
             $response['name'] = $result['name'];
+            $response['account'] = $result['account'];
+            $response['password'] = $result['password'];
+            $response['gender'] = $result['gender'];
         } else {
             $response['status'] = 401;  // Unauthorized
             $response['message'] = "帳號或密碼錯誤！請重試";
