@@ -346,7 +346,8 @@
         function updateProfile() {
             let data = {
                 "account": document.getElementById("account").value,
-                "password": document.getElementById("password").value,
+                "old_password": document.getElementById("old-password").value,
+                "new_password": document.getElementById("new-password").value,
                 "name": document.getElementById("name").value,
                 "gender": document.getElementById("gender").value,
             };
@@ -356,7 +357,9 @@
                     let response = res['data'];
                     if (response['status'] === 200) {
                         alert("資料更新成功");
-                        localStorage.setItem('teacherPassword', data.password);
+                        if (data.new_password) {
+                            localStorage.setItem('teacherPassword', data.new_password);
+                        }
                         localStorage.setItem('teacherName', data.name);
                         localStorage.setItem('teacherGender', data.gender);
                     } else {
@@ -464,12 +467,14 @@
     </div>
     <div id="profile" class="content" style="display: none;">
         <h1>個人資料</h1>
-        <label for="name">姓名：</label>
+        <label for="name">姓名（必填）：</label>
         <input type="text" id="name" name="name" required><br><br>
         <label for="account">帳號：</label>
         <input type="text" id="account" name="account" disabled><br><br>
-        <label for="password">密碼：</label>
-        <input type="password" id="password" name="password" required><br><br>
+        <label for="old-password">舊密碼（必填）：</label>
+        <input type="password" id="old-password" name="old_password" required><br><br>
+        <label for="new-password">新密碼：</label>
+        <input type="password" id="new-password" name="new_password"><br><br>
         <label for="gender">性別：</label>
         <select id="gender" name="gender" required>
             <option value="male">男</option>
