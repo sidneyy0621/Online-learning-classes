@@ -16,7 +16,7 @@ function updateUserProfile() {
         // 檢查輸入的有效性
         if (empty($account) || empty($old_password) || empty($gender)) {
             $response['status'] = 400; // Bad request
-            $response['message'] = "需輸入舊密碼才能更新資料！";
+            $response['message'] = "請輸入舊密碼才能更新資料！";
         } else {
             // 驗證舊密碼
             $sql = "SELECT `password`, `account` FROM `user` WHERE `account` = ?";
