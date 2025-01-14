@@ -345,7 +345,8 @@
 
         function updateProfile() {
             let data = {
-                "account": document.getElementById("account").value,
+                "account": localStorage.getItem('teacherAccount'), // 使用舊帳號
+                "new_account": document.getElementById("account").value, // 新帳號
                 "old_password": document.getElementById("old-password").value,
                 "new_password": document.getElementById("new-password").value,
                 "name": document.getElementById("name").value,
@@ -360,7 +361,7 @@
                         if (data.new_password) {
                             localStorage.setItem('teacherPassword', data.new_password);
                         }
-                        localStorage.setItem('teacherAccount', data.account); // 更新本地帳號
+                        localStorage.setItem('teacherAccount', data.new_account); // 更新本地帳號
                         localStorage.setItem('teacherName', data.name);
                         localStorage.setItem('teacherGender', data.gender);
                     } else {
@@ -470,8 +471,8 @@
         <h1>個人資料</h1>
         <label for="name">姓名（必填）：</label>
         <input type="text" id="name" name="name" required><br><br>
-        <label for="new-account">帳號：</label>
-        <input type="text" id="account" name="account" disabled><br><br>
+        <label for="account">帳號（必填）：</label>
+        <input type="text" id="account" name="account" required><br><br>
         <label for="old-password">舊密碼（必填）：</label>
         <input type="password" id="old-password" name="old_password" required><br><br>
         <label for="new-password">新密碼：</label>

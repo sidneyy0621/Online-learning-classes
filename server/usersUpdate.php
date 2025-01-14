@@ -19,29 +19,30 @@ function updateUserProfile() {
             $response['message'] = "需輸入舊密碼才能更新資料！";
         } else {
             // 驗證舊密碼
-            $sql = "SELECT `password` FROM `user` WHERE `account` = ?";
+            $sql = "SELECT `password`, `account` FROM `user` WHERE `account` = ?";
             $stmt = $conn->prepare($sql);
             $stmt->execute([$account]);
             $user = $stmt->fetch();
 
             if ($user && $user['password'] === $old_password) {
                 // 更新使用者資料
+                $new_account = $_POST['new_account'];
                 if (!empty($new_password) && !empty($name)) {
-                    $sql = "UPDATE `user` SET `password` = ?, `name` = ?, `gender` = ? WHERE `account` = ?";
+                    $sql = "UPDATE `user` SET `account` = ?, `password` = ?, `name` = ?, `gender` = ? WHERE `account` = ?";
                     $stmt = $conn->prepare($sql);
-                    $result = $stmt->execute([$new_password, $name, $gender, $account]);
+                    $result = $stmt->execute([$new_account, $new_password, $name, $gender, $account]);
                 } elseif (!empty($new_password)) {
-                    $sql = "UPDATE `user` SET `password` = ?, `gender` = ? WHERE `account` = ?";
+                    $sql = "UPDATE `user` SET `account` = ?, `password` = ?, `gender` = ? WHERE `account` = ?";
                     $stmt = $conn->prepare($sql);
-                    $result = $stmt->execute([$new_password, $gender, $account]);
+                    $result = $stmt->execute([$new_account, $new_password, $gender, $account]);
                 } elseif (!empty($name)) {
-                    $sql = "UPDATE `user` SET `name` = ?, `gender` = ? WHERE `account` = ?";
+                    $sql = "UPDATE `user` SET `account` = ?, `name` = ?, `gender` = ? WHERE `account` = ?";
                     $stmt = $conn->prepare($sql);
-                    $result = $stmt->execute([$name, $gender, $account]);
+                    $result = $stmt->execute([$new_account, $name, $gender, $account]);
                 } else {
-                    $sql = "UPDATE `user` SET `gender` = ? WHERE `account` = ?";
+                    $sql = "UPDATE `user` SET `account` = ?, `gender` = ? WHERE `account` = ?";
                     $stmt = $conn->prepare($sql);
-                    $result = $stmt->execute([$gender, $account]);
+                    $result = $stmt->execute([$new_account, $gender, $account]);
                 }
 
                 if ($result) {
