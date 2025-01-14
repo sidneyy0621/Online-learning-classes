@@ -14,9 +14,9 @@ function updateUserProfile() {
         $conn = $response['result'];
 
         // 檢查輸入的有效性
-        if (empty($account) || empty($old_password) || empty($name) || empty($gender)) {
+        if (empty($account) || empty($old_password) || empty($gender)) {
             $response['status'] = 400; // Bad request
-            $response['message'] = "所有欄位都是必填的！";
+            $response['message'] = "需輸入舊密碼才能更新資料！";
         } else {
             // 驗證舊密碼
             $sql = "SELECT `password` FROM `user` WHERE `account` = ?";
@@ -26,14 +26,22 @@ function updateUserProfile() {
 
             if ($user && $user['password'] === $old_password) {
                 // 更新使用者資料
-                if (!empty($new_password)) {
+                if (!empty($new_password) && !empty($name)) {
                     $sql = "UPDATE `user` SET `password` = ?, `name` = ?, `gender` = ? WHERE `account` = ?";
                     $stmt = $conn->prepare($sql);
                     $result = $stmt->execute([$new_password, $name, $gender, $account]);
-                } else {
+                } elseif (!empty($new_password)) {
+                    $sql = "UPDATE `user` SET `password` = ?, `gender` = ? WHERE `account` = ?";
+                    $stmt = $conn->prepare($sql);
+                    $result = $stmt->execute([$new_password, $gender, $account]);
+                } elseif (!empty($name)) {
                     $sql = "UPDATE `user` SET `name` = ?, `gender` = ? WHERE `account` = ?";
                     $stmt = $conn->prepare($sql);
                     $result = $stmt->execute([$name, $gender, $account]);
+                } else {
+                    $sql = "UPDATE `user` SET `gender` = ? WHERE `account` = ?";
+                    $stmt = $conn->prepare($sql);
+                    $result = $stmt->execute([$gender, $account]);
                 }
 
                 if ($result) {
